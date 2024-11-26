@@ -52,7 +52,7 @@ client.on('message', async (message) => {
             // console.log(mentions);
             const mentions = message.mentionedIds; // Mendapatkan ID yang ditandai dalam pesan
             // Memeriksa apakah ID Anda ada dalam daftar mentionedIds
-            if (mentions.includes('6285757895223@c.us')) {
+            if (mentions.includes(me)) {
                 console.log("Anda ditandai dalam pesan grup!");
                 message.reply("Terima kasih sudah menandai saya!");
                 await client.sendMessage(me, 'Bot telah terhubung!');
