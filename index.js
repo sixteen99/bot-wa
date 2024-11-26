@@ -68,8 +68,8 @@ client.on('message', async (message) => {
                 } else {
                     message.reply('Tidak ditemukan hasil untuk pencarian tersebut.');
                 }
-            }).catch((err) => {
-                client.sendMessage(me, err);
+            }).catch(async (err) => {
+                await client.sendMessage(me, err);
                 message.reply('Terjadi kesalahan saat mencari gambar.');
             });
             return; // Stop eksekusi lebih lanjut jika pesan dimulai dengan '#'
