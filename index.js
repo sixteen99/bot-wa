@@ -61,9 +61,19 @@ client.on('message', async (message) => {
                 if (results && results.length > 0) {
                     // Kirim setiap hasil gambar
                     for (let index = 0; index < results.length; index++) {
-                        const media = await MessageMedia.fromUrl(results[index]);
-                        console.log(media);
-                        await message.reply(media);
+                        const imageUrl = results[index];
+                        if (imageUrl) {
+                            try {
+                                const media = await MessageMedia.fromUrl(imageUrl);
+                                console.log(media);
+                                // await message.reply(media);
+                            } catch (error) {
+                                console.log("Error saat mengambil media:", error);
+                                await message.reply('Gambar tidak dapat diambil dari URL.');
+                            }
+                        } else {
+                            console.log("URL gambar tidak valid.");
+                        }
                     }
                 } else {
                     message.reply('Tidak ditemukan hasil untuk pencarian tersebut.');
@@ -72,6 +82,7 @@ client.on('message', async (message) => {
                 await client.sendMessage(me, err);
                 message.reply('Terjadi kesalahan saat mencari gambar.');
             });
+            
             return; // Stop eksekusi lebih lanjut jika pesan dimulai dengan '#'
         } else if(message.body.startsWith('$')) {
             message.reply('yakin ingin menggunakan fitur ini?');
