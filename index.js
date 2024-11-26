@@ -6,7 +6,7 @@ const { default: axios } = require('axios');
 const COOLDOWN_TIME = 1 * 1000; 
 const cooldownMap = new Map(); // Map untuk cooldown
 const me = '6285757895223@c.us';
-
+let botReady = false;
 // Inisialisasi client WhatsApp
 const client = new Client({
     authStrategy: new LocalAuth(),
@@ -22,6 +22,8 @@ client.on('qr', (qr) => {
 
 client.on("ready", async () => {
     console.log("Bot telah terhubung!");
+
+    botReady = true;
 
     await client.sendMessage(me, 'Bot telah terhubung!');
 });
@@ -44,6 +46,7 @@ function getWaktuSekarang() {
 
 // Menangani pesan yang diterima
 client.on('message', async (message) => {
+    if (!botReady) return;
     try {
         const chatId = message.from; // Mendapatkan ID chat pengirim
 
