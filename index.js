@@ -3,7 +3,7 @@ const qrcode = require('qrcode-terminal');
 const { default: axios } = require('axios');
 
 
-const COOLDOWN_TIME = 10 * 1000; 
+const COOLDOWN_TIME = 1000 * 1000; 
 const cooldownMap = new Map(); // Map untuk cooldown
 const me = '6285757895223@c.us';
 let botReady = false;
