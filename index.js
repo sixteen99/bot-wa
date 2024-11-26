@@ -50,25 +50,22 @@ client.on('message', async (message) => {
         // Memvalidasi apakah pesan berasal dari grup, chat pribadi, atau status
         if (chatId.includes('@g.us')) {
             // console.log(mentions);
-            const mentions = message.mentionedIds; // Mendapatkan ID yang ditandai dalam pesan
-            // Memeriksa apakah ID Anda ada dalam daftar mentionedIds
+            const mentions = message.mentionedIds;
             if (mentions.includes(me)) {
                 console.log("Anda ditandai dalam pesan grup!");
                 message.reply("Terima kasih sudah menandai saya!");
                 await client.sendMessage(me, 'Bot telah terhubung!');
             }
-
+            
         } else if (chatId.includes('@c.us')) {
             console.log("Pesan berasal dari chat pribadi");
+            message.reply("Terima kasih sudah mengirim pesan!");
 
-        } else if (message.isStatus) {
-            console.log("Pesan berasal dari status");
-            message.reply("Pesan diterima dari status.");
         } else {
             console.log("Sumber pesan tidak diketahui");
         }
     } catch (error) {
-        await client.sendMessage('6285757895223@c.us', error);
+        await client.sendMessage(me, error);
     }  
 });
 
