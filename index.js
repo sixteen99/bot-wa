@@ -64,18 +64,7 @@ client.on('message', async (message) => {
         } else if (chatId.includes('@c.us')) {
             
             // Jika belum ada gambar, kirim pesan otomatis dengan waktu
-            message.reply(`Terima kasih.. \nPesan anda akan dibalas saat pemilik bangun/online.
-
-                _*Dibalas oleh Bot Otomatis._
-                
-                *_Fitur Bot:_*
-                1.Pencarian gambar: Command "*#*". 
-                2.Pencarian Google(Single index): Command "*/*".
-
-                _Misalnya: '#Naruto' atau '/Siapa penemu gravitasi?'_
-
-                Fitur lainnya masih dalam proses pengembangan😉.
-                `);
+            message.reply(`Terima kasih.. \nPesan anda akan dibalas saat pemilik bangun/online.\n\n_*Dibalas oleh Bot Otomatis._\n\n*_Fitur Bot:_*\n1.Pencarian gambar: Command "*#*".\n2.Pencarian Google(Single index): Command "*/*".\n\n_Misalnya: '#Naruto' atau '/Siapa penemu gravitasi?'_\n\nFitur lainnya masih dalam proses pengembangan😉.`);
         } else {
             await client.sendMessage(me, "_Seseorang mencoba mengirimi anda pesan dengan sumber yang tidak diketahui_");
         }
