@@ -65,11 +65,15 @@ client.on('message', async (message) => {
             
             // Jika belum ada gambar, kirim pesan otomatis dengan waktu
             message.reply(`
-                Terima kasih.. \nPesan anda akan dibalas saat pemilik bangun/online.\n\n_*Dibalas oleh Bot Otomatis._\n\n\n*_Fitur Bot:_*\n\n
-                1.Pencarian gambar: Command "*#*". \n
-                2.Pencarian Google(Single index): Command "*/*".\n\n
+                Terima kasih.. \nPesan anda akan dibalas saat pemilik bangun/online.
+                
+                _*Dibalas oleh Bot Otomatis._
+                
+                *_Fitur Bot:_*
+                1.Pencarian gambar: Command "*#*". 
+                2.Pencarian Google(Single index): Command "*/*".
 
-                _Misalnya: '#Naruto' atau '/Siapa penemu gravitasi?'_\n\n
+                _Misalnya: '#Naruto' atau '/Siapa penemu gravitasi?'_
 
                 Fitur lainnya masih dalam proses pengembangan😉.
                 `);
