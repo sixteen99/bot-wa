@@ -64,9 +64,8 @@ client.on('message', async (message) => {
         } else if (chatId.includes('@c.us')) {
             
             // Jika belum ada gambar, kirim pesan otomatis dengan waktu
-            message.reply(`
-                Terima kasih.. \nPesan anda akan dibalas saat pemilik bangun/online.
-                
+            message.reply(`Terima kasih.. \nPesan anda akan dibalas saat pemilik bangun/online.
+
                 _*Dibalas oleh Bot Otomatis._
                 
                 *_Fitur Bot:_*
