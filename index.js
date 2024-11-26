@@ -25,24 +25,10 @@ client.on("ready", async () => {
 
     botReady = true;
 
-    await client.sendMessage(me, 'Bot telah terhubung!');
+    await client.sendMessage(me, '_Bot telah terhubung!_');
 });
 
 
-function getWaktuSekarang() {
-    const now = new Date();
-    const hour = now.getHours();
-
-    if (hour >= 5 && hour < 10) {
-        return 'pagi';
-    } else if (hour >= 10 && hour < 15) {
-        return 'siang';
-    } else if (hour >= 15 && hour < 18) {
-        return 'sore';
-    } else {
-        return 'malam';
-    }
-}
 
 // Menangani pesan yang diterima
 client.on('message', async (message) => {
@@ -51,43 +37,6 @@ client.on('message', async (message) => {
     try {
         const senderNumber = message.from.replace('@c.us', ''); // Nomor pengirim
         const currentTime = Date.now(); // Waktu sekarang
-
-        // Jika pesan dimulai dengan '#', abaikan cooldown
-        if (message.body.startsWith('#')) {
-            // Proses pesan yang diawali '#'
-            const searchQuery = message.body.slice(1).trim();
-            axios.get(`https://api.ryzendesu.vip/api/search/pinterest?query=${searchQuery}`).then(async (res) => {
-                const results = res.data;
-                if (results && results.length > 0) {
-                    // Kirim setiap hasil gambar
-                    for (let index = 0; index < results.length; index++) {
-                        const imageUrl = results[index];
-                        if (imageUrl) {
-                            try {
-                                const media = await MessageMedia.fromUrl(imageUrl);
-                                console.log(media);
-                                // await message.reply(media);
-                            } catch (error) {
-                                console.log("Error saat mengambil media:", error);
-                                await message.reply('Gambar tidak dapat diambil dari URL.');
-                            }
-                        } else {
-                            console.log("URL gambar tidak valid.");
-                        }
-                    }
-                } else {
-                    message.reply('Tidak ditemukan hasil untuk pencarian tersebut.');
-                }
-            }).catch(async (err) => {
-                await client.sendMessage(me, err);
-                message.reply('Terjadi kesalahan saat mencari gambar.');
-            });
-            
-            return; // Stop eksekusi lebih lanjut jika pesan dimulai dengan '#'
-        } else if(message.body.startsWith('$')) {
-            message.reply('yakin ingin menggunakan fitur ini?');
-            return;
-        }
 
         // Jika pengirim berada dalam cooldown
         if (cooldownMap.has(senderNumber)) {
@@ -108,18 +57,24 @@ client.on('message', async (message) => {
             // Pesan datang dari grup
             const mentions = message.mentionedIds;
             if (mentions.includes(me)) {
-                console.log("Anda ditandai dalam pesan grup!");
-                message.reply("Terima kasih sudah menandai saya!");
+                await client.sendMessage(me, "Anda ditandai dalam pesan grup");
+                message.reply("Terima kasih sudah menandai saya!\nPesan akan dibalas saat pemilik bangun/online.\n\n_*Dibalas oleh Bot Otomatis._");
             }
 
         } else if (chatId.includes('@c.us')) {
-            // Pesan datang dari chat pribadi
-            const waktuSekarang = getWaktuSekarang();
             
             // Jika belum ada gambar, kirim pesan otomatis dengan waktu
-            message.reply(`Selamat ${waktuSekarang}.. \nPesan anda akan dibalas saat pemilik bangun/online.\n\n_*Dibalas oleh: Bot Otomatis._`);
+            message.reply(`
+                Terima kasih.. \nPesan anda akan dibalas saat pemilik bangun/online.\n\n_*Dibalas oleh Bot Otomatis._\n\n\n*_Fitur Bot:_*\n\n
+                1.Pencarian gambar: Command "*#*". \n
+                2.Pencarian Google(Single index): Command "*/*".\n\n
+
+                _Misalnya: '#Naruto' atau '/Siapa penemu gravitasi?'_\n\n
+
+                Fitur lainnya masih dalam proses pengembangan😉.
+                `);
         } else {
-            console.log("Sumber pesan tidak diketahui");
+            await client.sendMessage(me, "_Seseorang mencoba mengirimi anda pesan dengan sumber yang tidak diketahui_");
         }
     } catch (error) {
         await client.sendMessage(me, error);
