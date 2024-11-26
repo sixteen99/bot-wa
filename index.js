@@ -89,7 +89,7 @@ client.on('message', async (message) => {
     //     const media = MessageMedia.fromFilePath('img/fuji.jpeg'); // Path ke gambar
     //     message.reply(media).catch(err => console.error('Error mengirim gambar:', err));
     } else {
-        message.reply(`Selamat ${waktuSekarang}.. \nPesan anda akan dibalas saat pemilik ahaha/online.\n\n_*Dibalas oleh: Bot Haru._`);
+        message.reply(`Selamat ${waktuSekarang}.. \nPesan anda akan dibalas saat pemilik bangun/online.\n\n_*Dibalas oleh: Bot Haru._`);
     }
 
 
