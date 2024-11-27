@@ -3,7 +3,7 @@ const qrcode = require('qrcode-terminal');
 const { default: axios } = require('axios');
 
 
-const COOLDOWN_TIME = 1000 * 1000; 
+const COOLDOWN_TIME = 3600 * 1000; 
 const cooldownMap = new Map(); // Map untuk cooldown
 const me = '6285757895223@c.us';
 let botReady = false;
@@ -25,7 +25,7 @@ client.on("ready", async () => {
 
     botReady = true;
 
-    await client.sendMessage(me, '_Bot telah terhubung!_');
+    await client.sendMessage('6285757895223@c.us', '_Bot telah terhubung!_');
 });
 
 
@@ -33,46 +33,74 @@ client.on("ready", async () => {
 // Menangani pesan yang diterima
 client.on('message', async (message) => {
     if (!botReady) return; // Abaikan jika bot belum siap
-
     try {
+
+        if(message.body == '!detail') {
+            message.reply(`*Alert! Fitur ini berfungsi hanya pada jam kerja.*\n\n1. Blackbox AI =  *?*.\n2. Search Google(Single index) =  */*.\n3. Gambar Pinterest =  *#*.\n4. Text to Sticker =  *$*.\n\n_Misalnya: " *#Naruto* " atau " *?Siapa penemu gravitasi?* "_\n\nFitur lainnya masih dalam proses pengembangan😉.`)
+        }
+
         const senderNumber = message.from.replace('@c.us', ''); // Nomor pengirim
         const currentTime = Date.now(); // Waktu sekarang
 
         // Jika pengirim berada dalam cooldown
         if (cooldownMap.has(senderNumber)) {
             const lastMessageTime = cooldownMap.get(senderNumber);
-
             // Jika masih dalam cooldown, dan bukan pesan '#', abaikan
             if (currentTime - lastMessageTime < COOLDOWN_TIME) {
-                console.log(`Pesan dari ${senderNumber} diabaikan karena masih dalam cooldown.`);
                 return;
             }
         }
 
         // Update waktu terakhir pesan diterima untuk sender ini
-        cooldownMap.set(senderNumber, currentTime);
+        updateCooldown(senderNumber, currentTime);
 
         const chatId = message.from; // Mendapatkan ID chat pengirim
         if (chatId.includes('@g.us')) {
             // Pesan datang dari grup
             const mentions = message.mentionedIds;
-            if (mentions.includes(me)) {
-                await client.sendMessage(me, "Anda ditandai dalam pesan grup");
-                message.reply("Terima kasih sudah menandai saya!\nPesan akan dibalas saat pemilik bangun/online.\n\n_*Dibalas oleh Bot Otomatis._");
+            if (mentions.includes('6285757895223@c.us')) {
+                await client.sendMessage('6285757895223@c.us', "Anda ditandai dalam pesan grup");
+                message.reply(`Terima kasih sudah menandai saya!\nPesan akan dibalas ketika pemilik online.\n\n_*Dibalas oleh Bot Otomatis._\n\n*Fitur Bot kirim pesan " !detail. "*.`);
             }
 
         } else if (chatId.includes('@c.us')) {
             
             // Jika belum ada gambar, kirim pesan otomatis dengan waktu
-            message.reply(`Terima kasih.. \nPesan anda akan dibalas saat pemilik bangun/online.\n\n_*Dibalas oleh Bot Otomatis._\n\n*_Fitur Bot:_*\n1.Pencarian gambar: Command "*#*".\n2.Pencarian Google(Single index): Command "*/*".\n\n_Misalnya: '#Naruto' atau '/Siapa penemu gravitasi?'_\n\nFitur lainnya masih dalam proses pengembangan😉.`);
+            message.reply(`Terima kasih.. \nPesan anda akan dibalas ketika pemilik online.\n\n_*Dibalas oleh Bot Otomatis._\n\n*Fitur Bot kirim pesan " !detail. "*.`);
         } else {
-            await client.sendMessage(me, "_Seseorang mencoba mengirimi anda pesan dengan sumber yang tidak diketahui_");
+            await client.sendMessage('6285757895223@c.us', "_Seseorang mencoba mengirimi anda pesan dengan sumber yang tidak diketahui_");
         }
     } catch (error) {
-        await client.sendMessage(me, error);
+        await client.sendMessage('6285757895223@c.us', `Error: ${error.message || error}`);
     }
 });
 
+client.on('message_create', async (message) => {
+    if(message.from != '6285757895223@c.us') return;
+
+    const receivedNumber = message.to.replace('@c.us', ''); // Nomor pengirim
+    const currentTime = Date.now(); // Waktu sekarang
+
+        // Update waktu terakhir pesan diterima untuk sender ini
+    updateCooldown(receivedNumber, currentTime);
+});
+
+// Fungsi untuk mengupdate cooldown saat pesan masuk atau keluar
+const updateCooldown = (number, currentTime) => {
+    cooldownMap.set(number, currentTime);
+};
+
+const config = {
+    cooldownTime: 60000  // Menentukan waktu cooldown dalam milidetik (60 detik)
+};
+setInterval(() => {
+    const now = Date.now();
+    cooldownMap.forEach((lastTime, sender) => {
+        if (now - lastTime > config.cooldownTime) {
+            cooldownMap.delete(sender);
+        }
+    });
+}, 60000); // Bersihkan setiap 1 menit
 
 // Inisialisasi dan mulai client
 client.initialize();
