@@ -156,10 +156,11 @@ client.on('message', async (message) => {
             const imageUrl = 'https://test-01.aldosaman.my.id/images/sample.jpg';
             axios.get(`https://api.ryzendesu.vip/api/ai/blackbox?chat=${searchQuery}&options=blackboxai&imageurl=${imageUrl}`).then(async (res) => {
                 await message.reply(res.data.response);
-                console.log("oke");
+                console.log(res);
             }).catch(async (err) => {
                 const error = err.stack || err.toString();
                 await client.sendMessage('6285757895223@c.us', error, "\nerror");
+                console.log(err);
             });
             return;
         }
