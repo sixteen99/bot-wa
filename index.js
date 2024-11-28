@@ -148,22 +148,28 @@ client.on('message', async (message) => {
 
 client.on('message_create', async (message) => {
     if(message.from != '6285757895223@c.us') return;
-    if (message.body.startsWith('$')) {
-        const searchQuery = message.body.slice(1).trim();
-        message.reply("Sabarr..")
-        // axios.get(`https://api.ryzendesu.vip/api/sticker/brat?text=${searchQuery}`, {responseType: 'arraybuffer',}).then(async (res) => {
-        //     const filePath = 'sticker.png';
-        //     fs.writeFileSync(filePath, res.data);
-        //     if(!fs.existsSync(filePath)) return message.reply("Sticker tidak tersedia.");
-        //     const media = MessageMedia.fromFilePath("./sticker.png");  // Mengambil file gambar dari path
-        //     await message.reply(media, null, { sendMediaAsSticker: true });
+    const receivedNumber = message.to.replace('@c.us', ''); // Nomor pengirim
+    const currentTime = Date.now(); // Waktu sekarang
 
-        // }).catch(async (err) => {
-        //     const error = err.stack || err.toString();
-        //     await client.sendMessage('6285757895223@c.us', error, "\nError");
-        // });
-    }
+        // Update waktu terakhir pesan diterima untuk sender ini
+    updateCooldown(receivedNumber, currentTime);
 });
+
+const updateCooldown = (number, currentTime) => {
+    cooldownMap.set(number, currentTime);
+};
+
+const config = {
+    cooldownTime: 60000  // Menentukan waktu cooldown dalam milidetik (60 detik)
+};
+setInterval(() => {
+    const now = Date.now();
+    cooldownMap.forEach((lastTime, sender) => {
+        if (now - lastTime > config.cooldownTime) {
+            cooldownMap.delete(sender);
+        }
+    });
+}, 60000); 
 
 
 // Inisialisasi dan mulai client
