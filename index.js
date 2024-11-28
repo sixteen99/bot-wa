@@ -1,5 +1,6 @@
 const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
+const fs = require('fs');
 const { default: axios } = require('axios');
 
 
@@ -25,15 +26,81 @@ client.on("ready", async () => {
 
     botReady = true;
 
-    await client.sendMessage('6285757895223@c.us', '_Bot telah terhubung!_');
+    await client.sendMessage('6285757895223@c.us', 'Bot telah terhubung!');
 });
-
 
 
 // Menangani pesan yang diterima
 client.on('message', async (message) => {
     if (!botReady) return; // Abaikan jika bot belum siap
+
     try {
+
+        // Jika pesan dimulai dengan '#', abaikan cooldown
+        if (message.body.startsWith('#')) {
+            // Proses pesan yang diawali '#'
+            const searchQuery = message.body.slice(1).trim();
+            message.reply("mencari data..")
+            axios.get(`https://api.ryzendesu.vip/api/search/pinterest?query=${searchQuery}`, { maxRedirects: 0 }).then(async (res) => {
+                const results = res.data;
+                if (results && results.length > 0) {
+                    // Kirim setiap hasil gambar
+                    for (let index = 0; index < results.length; index++) {
+                        const media = await MessageMedia.fromUrl(results[index]);
+                        await message.reply(media);
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                    }
+                } else {
+                    return message.reply('Tidak ditemukan hasil untuk pencarian tersebut.');
+                }
+                await message.reply("Done:)")
+                return;
+            }).catch(async (err) => {
+                const error = err.stack || err.toString();
+                await client.sendMessage('6285757895223@c.us', error, "\n_Search google error_");
+                message.reply('Terjadi kesalahan saat mencari gambar.');
+            });
+            return; // Stop eksekusi lebih lanjut jika pesan dimulai dengan '#'
+        } else if(message.body.startsWith('/')) {
+            const searchQuery = message.body.slice(1).trim();
+            message.reply("mencari data..")
+            axios.get(`https://api.ryzendesu.vip/api/search/google?query=${searchQuery}`).then(async (res) => {
+                await message.reply(`*${res.data[0].title}*\n\n${res.data[0].description}\n\n_Link: ${res.data[0].link}_`);
+                message.reply("Done:)")
+            }).catch(async (err) => {
+                const error = err.stack || err.toString();
+                await client.sendMessage('6285757895223@c.us', error, "\n_Search google error_");
+            });
+            return;
+        } else if(message.body.startsWith('?')) {
+            const searchQuery = message.body.slice(1).trim();
+            message.reply("mencari data..")
+            axios.get(`https://api.ryzendesu.vip/api/ai/blackbox?chat=${searchQuery}&options=blackboxai&imageurl=`).then(async (res) => {
+                await message.reply(res.data.response);
+                message.reply("Done:)")
+            }).catch(async (err) => {
+                const error = err.stack || err.toString();
+                await client.sendMessage('6285757895223@c.us', error, "\nerror");
+            });
+            return;
+        } 
+        else if (message.body.startsWith('$')) {
+            const searchQuery = message.body.slice(1).trim();
+            message.reply("Sabarr..")
+            axios.get(`https://api.ryzendesu.vip/api/sticker/brat?text=${searchQuery}`, {responseType: 'arraybuffer',}).then(async (res) => {
+                const filePath = 'sticker.png';
+                fs.writeFileSync(filePath, res.data);
+                if(!fs.existsSync(filePath)) return message.reply("Sticker tidak tersedia.");
+                const media = MessageMedia.fromFilePath("./sticker.png");  // Mengambil file gambar dari path
+                await message.reply(media, null, { sendMediaAsSticker: true });
+
+            }).catch(async (err) => {
+                const error = err.stack || err.toString();
+                await client.sendMessage('6285757895223@c.us', error, "\nerror");
+                // await message.reply(res.data.response);
+            });
+            return;
+        }
 
         if(message.body == '!detail') {
             message.reply(`*Alert! Fitur ini berfungsi hanya pada jam kerja.*\n\n1. Blackbox AI =  *?*.\n2. Search Google(Single index) =  */*.\n3. Gambar Pinterest =  *#*.\n4. Text to Sticker =  *$*.\n\n_Misalnya: " *#Naruto* " atau " *?Siapa penemu gravitasi?* "_\n\nFitur lainnya masih dalam proses pengembangan😉.`)
@@ -70,37 +137,34 @@ client.on('message', async (message) => {
         } else {
             await client.sendMessage('6285757895223@c.us', "_Seseorang mencoba mengirimi anda pesan dengan sumber yang tidak diketahui_");
         }
+
+
+        
     } catch (error) {
-        await client.sendMessage('6285757895223@c.us', `Error: ${error.message || error}`);
+        await client.sendMessage(me, error);
+        return;
     }
 });
 
 client.on('message_create', async (message) => {
     if(message.from != '6285757895223@c.us') return;
+    if (message.body.startsWith('$')) {
+        const searchQuery = message.body.slice(1).trim();
+        message.reply("Sabarr..")
+        // axios.get(`https://api.ryzendesu.vip/api/sticker/brat?text=${searchQuery}`, {responseType: 'arraybuffer',}).then(async (res) => {
+        //     const filePath = 'sticker.png';
+        //     fs.writeFileSync(filePath, res.data);
+        //     if(!fs.existsSync(filePath)) return message.reply("Sticker tidak tersedia.");
+        //     const media = MessageMedia.fromFilePath("./sticker.png");  // Mengambil file gambar dari path
+        //     await message.reply(media, null, { sendMediaAsSticker: true });
 
-    const receivedNumber = message.to.replace('@c.us', ''); // Nomor pengirim
-    const currentTime = Date.now(); // Waktu sekarang
-
-        // Update waktu terakhir pesan diterima untuk sender ini
-    updateCooldown(receivedNumber, currentTime);
+        // }).catch(async (err) => {
+        //     const error = err.stack || err.toString();
+        //     await client.sendMessage('6285757895223@c.us', error, "\nError");
+        // });
+    }
 });
 
-// Fungsi untuk mengupdate cooldown saat pesan masuk atau keluar
-const updateCooldown = (number, currentTime) => {
-    cooldownMap.set(number, currentTime);
-};
-
-const config = {
-    cooldownTime: 60000  // Menentukan waktu cooldown dalam milidetik (60 detik)
-};
-setInterval(() => {
-    const now = Date.now();
-    cooldownMap.forEach((lastTime, sender) => {
-        if (now - lastTime > config.cooldownTime) {
-            cooldownMap.delete(sender);
-        }
-    });
-}, 60000); // Bersihkan setiap 1 menit
 
 // Inisialisasi dan mulai client
 client.initialize();
