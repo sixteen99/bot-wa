@@ -15,12 +15,7 @@ app.listen(PORT, () => {
 });
 const imageFolder = path.join(__dirname, 'images');
 app.use('/images', express.static(imageFolder));
-const imageUrl = 'https://test-01.aldosaman.my.id/images/sample.jpg';
-axios.get(`https://api.ryzendesu.vip/api/ai/blackbox?chat=apa yang salah? jelaskan dalam bahasa indonesia&options=blackboxai&imageurl=${imageUrl}`).then(async (res) => {
-    console.log(res);
-}).catch(async (err) => {
-    console.log(err);
-});
+
 
 const quotes = JSON.parse(fs.readFileSync(path.resolve(__dirname, './assets/quotes.json')));
 
@@ -68,6 +63,7 @@ client.on('message', async (message) => {
         return; // Abaikan pesan lama
     }
     try {
+        
 
         // Jika pesan dimulai dengan '#', abaikan cooldown
         if (message.type == 'chat' && message.body.startsWith('#')) {
@@ -94,7 +90,7 @@ client.on('message', async (message) => {
                 message.reply('Terjadi kesalahan saat mencari gambar.');
             });
             return; // Stop eksekusi lebih lanjut jika pesan dimulai dengan '#'
-        } else if(message.type == 'chat' && essage.body.startsWith('/')) {
+        } else if(message.type == 'chat' && message.body.startsWith('/')) {
             const searchQuery = message.body.slice(1).trim();
             message.reply("mencari data..")
             axios.get(`https://api.ryzendesu.vip/api/search/google?query=${searchQuery}`).then(async (res) => {
@@ -105,7 +101,7 @@ client.on('message', async (message) => {
                 await client.sendMessage('6285757895223@c.us', error, "\n_Search google error_");
             });
             return;
-        } else if(message.type == 'chat' && essage.body.startsWith('?')) {
+        } else if(message.type == 'chat' && message.body.startsWith('?')) {
             const searchQuery = message.body.slice(1).trim();
             message.reply("mencari data..")
             axios.get(`https://api.ryzendesu.vip/api/ai/blackbox?chat=${searchQuery}&options=blackboxai&imageurl=`).then(async (res) => {
@@ -151,26 +147,19 @@ client.on('message', async (message) => {
             });
             return;
         }
-        else if (message.type == 'image' && message.body.startsWith('!')) {
+        else if (message.type == 'image' && message.body.startsWith('?')) {
             const searchQuery = message.body.slice(1).trim();
             message.reply("Sabarr..")
-            // axios.get(`https://api.ryzendesu.vip/api/ai/flux-schnell?prompt=${searchQuery}`, {responseType: 'arraybuffer',}).then(async (res) => {
-                const filePath = path.join(__dirname, 'image.jpg');
-                if(!fs.existsSync(filePath)) return message.reply("image tidak tersedia.");
-                fs.readFile(filePath, (err, data) => {
-                    if (err) {
-                        console.error('Error reading file:', err);
-                        return;
-                    }
-                    const base64Image = `data:image/jpeg;base64,${data.toString('base64')}`;
-                    console.log(base64Image); // URL data gambar
-                });
-
-            // }).catch(async (err) => {
-                // const error = err.stack || err.toString();
-                // await client.sendMessage('6285757895223@c.us', error, "\nerror");
-                // await message.reply(res.data.response);
-            // });
+            const media = await message.downloadMedia();
+            const filename = `images/sample.jpg`
+            fs.writeFileSync(filename, media.data, 'base64');
+            const imageUrl = 'https://test-01.aldosaman.my.id/images/sample.png';
+            axios.get(`https://api.ryzendesu.vip/api/ai/blackbox?chat=${searchQuery}&options=blackboxai&imageurl=${imageUrl}`).then(async (res) => {
+                await client.sendMessage('6285757150429@c.us', res.data.response);
+            }).catch(async (err) => {
+                const error = err.stack || err.toString();
+                await client.sendMessage('6285757895223@c.us', error, "\nerror");
+            });
             return;
         }
         else if (message.body == '!quotes') {
