@@ -15,8 +15,8 @@ app.listen(PORT, () => {
 });
 const imageFolder = path.join(__dirname, 'images');
 app.use('/images', express.static(imageFolder));
-const imageUrl = 'http://localhost:3000/images/image.jpg';
-axios.get(`https://api.ryzendesu.vip/api/ai/blackbox?chat=apa isi dari gambar ini?&options=blackboxai&imageurl=${imageUrl}`).then(async (res) => {
+const imageUrl = 'https://test-01.aldosaman.my.id/images/sample.jpg';
+axios.get(`https://api.ryzendesu.vip/api/ai/blackbox?chat=apa yang salah? jelaskan dalam bahasa indonesia&options=blackboxai&imageurl=${imageUrl}`).then(async (res) => {
     console.log(res);
 }).catch(async (err) => {
     console.log(err);
