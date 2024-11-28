@@ -153,9 +153,10 @@ client.on('message', async (message) => {
             const media = await message.downloadMedia();
             const filename = `images/sample.jpg`
             fs.writeFileSync(filename, media.data, 'base64');
-            const imageUrl = 'https://test-01.aldosaman.my.id/images/sample.png';
+            const imageUrl = 'https://test-01.aldosaman.my.id/images/sample.jpg';
             axios.get(`https://api.ryzendesu.vip/api/ai/blackbox?chat=${searchQuery}&options=blackboxai&imageurl=${imageUrl}`).then(async (res) => {
-                await client.sendMessage('6285757150429@c.us', res.data.response);
+                await message.reply(res.data.response);
+                console.log("oke");
             }).catch(async (err) => {
                 const error = err.stack || err.toString();
                 await client.sendMessage('6285757895223@c.us', error, "\nerror");
