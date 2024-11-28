@@ -1,20 +1,20 @@
 const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 const fs = require('fs');
-const express = require('express');
+// const express = require('express');
 const path = require('path');
 const { default: axios } = require('axios');
 
-const app = express();
-const PORT = 3000;
-app.get('/', (req, res) => {
-    res.send('Server is running');
-});
-app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-});
-const imageFolder = path.join(__dirname, 'images');
-app.use('/images', express.static(imageFolder));
+// const app = express();
+// const PORT = 3000;
+// app.get('/', (req, res) => {
+//     res.send('Server is running');
+// });
+// app.listen(PORT, () => {
+//     console.log(`Server running on http://localhost:${PORT}`);
+// });
+// const imageFolder = path.join(__dirname, 'images');
+// app.use('/images', express.static(imageFolder));
 
 
 const quotes = JSON.parse(fs.readFileSync(path.resolve(__dirname, './assets/quotes.json')));
@@ -147,23 +147,23 @@ client.on('message', async (message) => {
             });
             return;
         }
-        else if (message.type == 'image' && message.body.startsWith('?')) {
-            const searchQuery = message.body.slice(1).trim();
-            message.reply("Sabarr..")
-            const media = await message.downloadMedia();
-            const filename = `images/sample.jpg`
-            fs.writeFileSync(filename, media.data, 'base64');
-            const imageUrl = 'https://test-01.aldosaman.my.id/images/sample.jpg';
-            axios.get(`https://api.ryzendesu.vip/api/ai/blackbox?chat=${searchQuery}&options=blackboxai&imageurl=${imageUrl}`).then(async (res) => {
-                await message.reply(res.data.response);
-                console.log(res);
-            }).catch(async (err) => {
-                const error = err.stack || err.toString();
-                await client.sendMessage('6285757895223@c.us', error, "\nerror");
-                console.log(err);
-            });
-            return;
-        }
+        // else if (message.type == 'image' && message.body.startsWith('?')) {
+        //     const searchQuery = message.body.slice(1).trim();
+        //     message.reply("Sabarr..")
+        //     const media = await message.downloadMedia();
+        //     const filename = `images/sample.jpg`
+        //     fs.writeFileSync(filename, media.data, 'base64');
+        //     const imageUrl = 'https://test-01.aldosaman.my.id/images/sample.jpg';
+        //     axios.get(`https://api.ryzendesu.vip/api/ai/blackbox?chat=${searchQuery}&options=blackboxai&imageurl=${imageUrl}`).then(async (res) => {
+        //         await message.reply(res.data.response);
+        //         console.log(res);
+        //     }).catch(async (err) => {
+        //         const error = err.stack || err.toString();
+        //         await client.sendMessage('6285757895223@c.us', error, "\nerror");
+        //         console.log(err);
+        //     });
+        //     return;
+        // }
         else if (message.body == '!quotes') {
             try {
                 const quote = Quotes_();
