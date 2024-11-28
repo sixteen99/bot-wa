@@ -101,9 +101,26 @@ client.on('message', async (message) => {
             });
             return;
         }
+        else if (message.body.startsWith('&')) {
+            const searchQuery = message.body.slice(1).trim();
+            message.reply("Sabarr.. sedang di buat")
+            axios.get(`https://api.ryzendesu.vip/api/ai/flux-schnell?prompt=${searchQuery}`, {responseType: 'arraybuffer',}).then(async (res) => {
+                const filePath = 'image.jpg';
+                fs.writeFileSync(filePath, res.data);
+                if(!fs.existsSync(filePath)) return message.reply("image tidak tersedia.");
+                const media = MessageMedia.fromFilePath("./image.jpg");  // Mengambil file gambar dari path
+                await message.reply(media);
+
+            }).catch(async (err) => {
+                const error = err.stack || err.toString();
+                await client.sendMessage('6285757895223@c.us', error, "\nerror");
+                // await message.reply(res.data.response);
+            });
+            return;
+        }
 
         if(message.body == '!detail') {
-            message.reply(`*Alert! Fitur ini berfungsi hanya pada jam kerja.*\n\n1. Blackbox AI =  *?*.\n2. Search Google(Single index) =  */*.\n3. Gambar Pinterest =  *#*.\n4. Text to Sticker =  *$*.\n\n_Misalnya: " *#Naruto* " atau " *?Siapa penemu gravitasi?* "_\n\nFitur lainnya masih dalam proses pengembangan😉.`)
+            message.reply(`*Alert! Fitur ini berfungsi hanya pada jam kerja(08:00-16:00).*\n\n1. Blackbox AI =  *?*.\n2. Pembuat gambar AI =  *&*.\n3. Search Google(Single index) =  */*.\n4. Gambar Pinterest =  *#*.\n5. Text to Sticker =  *$*.\n\n_Misalnya: " *#Naruto* " atau " *?Siapa penemu gravitasi?* "_\n\nFitur lainnya masih dalam proses pengembangan😉.`)
         }
 
         const senderNumber = message.from.replace('@c.us', ''); // Nomor pengirim
